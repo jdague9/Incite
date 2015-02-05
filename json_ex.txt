@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 03 10:57:37 2015
+
+@author: JDD46
+"""
+campaigns/campaign
+{
+    "meta":
+    {
+        "limit": 20, "next": null, "offset": 0, "previous": null, "total_count": 1
+    }, 
+    "objects": 
+        [
+            {
+                "created_datetime": "2014-10-14T18:21:27.744928", "description": "", "external_id": "", "id": 3287, "keyword_component_count": 3, "name": "FL: Fuel Your Day", "resource_uri": "/v1/campaigns/campaign/3287/", "strict_geo_flag": true, "updated_datetime": "2015-02-03T15:24:34.157625", "utc_offset": -5.0, "web_resource_component_count": 0
+            }
+        ]
+    }
+
+
+campaigns/keyword
+{
+    "meta":
+    {
+        "limit": 20, "next": "/v1/campaigns/keyword/?format=json&auth_token=b1247883469e0d50886363b7d4ee45dd6cb6b5f1&campaign_id=2877&application_key=knum8o6cergki4wt8hmf94n5t0406ye9&limit=20&offset=20", "offset": 0, "previous": null, "total_count": 24
+    }, 
+    "objects":
+    [
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:27:13", "external_id": "", "id": 49696, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR cocktail OR alcohol OR vodka) AND (gym OR online OR hospital OR airline OR airport OR office OR cafeteria))", "name": "Accessibility 1", "resource_uri": "/v1/campaigns/keyword/49696/?campaign_id=2877"
+        }, 
+
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:26:18", "external_id": "", "id": 49695, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR cocktail OR alcohol OR vodka) AND (school OR vending machine OR gas station OR convenience store OR grocery store))", "name": "Accessibility 2", "resource_uri": "/v1/campaigns/keyword/49695/?campaign_id=2877"
+        }, 
+
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-15T16:49:08.547344", "external_id": "", "id": 51160, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND (walmart OR target OR \"whole foods\" OR \"trader joes\" OR \"market district\" OR bar OR restaurant OR cafe OR coffee shop OR starbucks OR caribou coffee OR GNC))", "name": "Accessibility 3", "resource_uri": "/v1/campaigns/keyword/51160/?campaign_id=2877"
+        }, 
+
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:06:42.915426", "external_id": "", "id": 49685, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND (fun OR relaxation OR UTI OR UTH OR reward OR energy OR wake-up OR jolt OR energize OR help OR stomach OR tummy OR gut OR health))", "name": "Benefits", "resource_uri": "/v1/campaigns/keyword/49685/?campaign_id=2877"
+        }, 
+
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-15T16:50:55.321739", "external_id": "", "id": 51161, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND (healthy OR kidney OR mental OR mind OR heart OR hydrate OR hydration OR teeth OR dental OR body OR diet OR antioxidant OR digestion))", "name": "Benefits 2", "resource_uri": "/v1/campaigns/keyword/51161/?campaign_id=2877"
+        },
+
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:21:13", "external_id": "", "id": 49693, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND (\"sunmaid raisins\" OR Naked OR POM OR \"Bolt House\" OR fruit OR water OR yogurt OR produce))", "name": "Competitors", "resource_uri": "/v1/campaigns/keyword/49693/?campaign_id=2877"
+        }, 
+    
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:14:01", "external_id": "", "id": 49688, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND (kid OR child OR kids OR children OR parents OR young parents OR adults OR teens OR preteens OR millenials OR moms OR dads OR mom OR dad OR friends))", "name": "Consumers", "resource_uri": "/v1/campaigns/keyword/49688/?campaign_id=2877"
+        }, 
+
+        {
+            "category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T20:52:02.204142", "external_id": "", "id": 49673, "keyword": "\"cranberry\" AND (juice OR drink OR beverage OR vodka OR alcohol) AND\r\n((drinking OR drank) \r\nOR (morning OR breakfast OR afternoon OR lunch OR snack OR evening OR dinner OR night))", "name": "Consumption 1", "resource_uri": "/v1/campaigns/keyword/49673/?campaign_id=2877"
+        },
+
+            {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-16T01:06:07.019804", "external_id": "", "id": 51163, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR cocktail OR vodka) AND (ice OR water) \r\nOR (bottle OR glass OR thermos) \r\nOR (mix OR mixing OR mixer)\r\nOR (tons OR lots OR \"so much\"))", "name": "Consumption 2", "resource_uri": "/v1/campaigns/keyword/51163/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T20:54:44.380793", "external_id": "", "id": 49675, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND \r\n(help OR cure OR fix) OR (workout OR exercise OR gym OR crossfit OR cross fit OR barre OR practice OR tired OR sick OR UTI OR urinary tract infection))", "name": "Consumption Cure", "resource_uri": "/v1/campaigns/keyword/49675/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:28:31", "external_id": "", "id": 49697, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR alcohol OR vodka OR cocktail) AND (spices OR ginger OR cinnamon OR cayenne pepper OR pepper OR salt OR variety OR pair OR pairings OR fruit OR veggies OR vegetables))", "name": "Ingredients 1", "resource_uri": "/v1/campaigns/keyword/49697/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:29:26", "external_id": "", "id": 49698, "keyword": "\"cranberry\" AND (juice OR beverage OR drink OR cocktail OR alcohol OR vodka) AND ((sliced OR diced OR cook with OR can OR easy OR convenient OR find OR \"can't find\" OR order OR buy OR purchase))", "name": "Ingredients 2", "resource_uri": "/v1/campaigns/keyword/49698/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-16T01:11:56.998786", "external_id": "", "id": 51164, "keyword": "\"cranberry\" AND (juice OR beverage OR cocktail OR drink OR vodka OR alcohol) AND ((pick-up OR apple OR strawberries OR blueberries OR raspberries OR banana OR mango OR orange OR pineapple OR whole OR crushed OR extracted OR extract))", "name": "Ingredients 3", "resource_uri": "/v1/campaigns/keyword/51164/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:16:05", "external_id": "", "id": 49689, "keyword": "\"cranberry\" AND (juice OR beverage OR cocktail OR drink OR vodka OR alcohol) AND ((sugar OR sugar-free OR healthy OR diabetic OR unhealthy OR expensive OR cheap OR value))", "name": "Juice", "resource_uri": "/v1/campaigns/keyword/49689/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-16T01:17:31.359323", "external_id": "", "id": 51165, "keyword": "\"cranberry\" AND (juice OR beverage OR drink OR cocktail OR vodka OR alcohol) AND ((liquid OR fresh OR sweet OR fake OR gross OR yum OR nice OR tastes good OR \"tastes bad\" OR dry OR dry mouth OR detox OR cleanse))", "name": "Juice 2", "resource_uri": "/v1/campaigns/keyword/51165/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:08:41.832201", "external_id": "", "id": 49686, "keyword": "\"cranberry\" AND (juice OR beverage OR drink OR cocktail OR alcohol OR vodka) AND ((sex OR aphrodisiac OR focus OR study OR energy OR anti-depressant OR mood))", "name": "Mood Enhancement", "resource_uri": "/v1/campaigns/keyword/49686/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-16T01:23:28.018507", "external_id": "", "id": 51166, "keyword": "\"cranberry\" AND ((juice OR beverage OR cocktail OR drink OR alcohol OR vodka) AND (happy OR guilt-free OR relaxation OR friends OR hangout OR wild OR party OR get together OR hangover OR sick))", "name": "Mood Enhancement 2", "resource_uri": "/v1/campaigns/keyword/51166/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T21:00:10.193627", "external_id": "", "id": 49676, "keyword": "\"cranberry\" AND ((juice OR beverage OR cocktail OR drink OR alcohol OR vodka) AND \r\n(bars OR power bars OR breakfast OR oatmeal OR cereal OR smoothie OR trail mix OR ethnic food OR antibiotic OR medicine OR remedy OR home remedy OR make-up OR cosmetics))", "name": "Other Uses", "resource_uri": "/v1/campaigns/keyword/49676/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-01T23:11:37.085644", "external_id": "", "id": 49687, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR cocktail OR alcohol OR vodka) AND (easy OR small OR large OR convenient OR pantry OR storage OR cabinet OR bag OR carry OR cool OR nice OR attractive))", "name": "Packaging", "resource_uri": "/v1/campaigns/keyword/49687/?campaign_id=2877"}, {"category": 1, "category_code": "BI", "category_desc": "Brand", "created_datetime": "2014-07-16T04:29:03.966326", "external_id": "", "id": 51167, "keyword": "\"cranberry\" AND ((juice OR beverage OR drink OR cocktail OR vodka OR alcohol) AND (ugly OR weird OR new OR sustainable OR recycle OR reuse OR car OR gym OR \"carry with me\" OR \"bring with me\" OR \"I like\" OR \"I hate\"))", "name": "Packaging 2", "resource_uri": "/v1/campaigns/keyword/51167/?campaign_id=2877"}
+    ]
+}
