@@ -17,8 +17,8 @@ import json
 import sqlite3 as sql
 from nltk.corpus import stopwords
 
-STOP_WORDS = stopwords.words('english') + stopwords.words('spanish') + ['rt', 
-              'n\'t', 'lol']
+STOP_WORDS = set(stopwords.words('english') + stopwords.words('spanish') + ['rt', 
+              'n\'t', 'lol', 'http', 'www', 'com', 'ca', 'amp'])
 
 class InciteExtractor(object):
     '''Initiates and contains CSV Reader object(s) and DB info.'''
@@ -56,26 +56,60 @@ class InciteExtractor(object):
             self.db_fname = db_fname
             conn = sql.connect(self.db_fname)
             cur = conn.cursor()
-            cur.execute('''CREATE TABLE IF NOT EXISTS Campaigns (id INTEGER 
-                        PRIMARY KEY, name TEXT UNIQUE)''')
-            cur.execute('''CREATE TABLE IF NOT EXISTS Posts (id INTEGER PRIMARY
-                        KEY, text TEXT, retweets INTEGER, is_junk BOOLEAN, 
-                        score FLOAT, timestamp TEXT, source TEXT, user_name 
-                        TEXT, user_score INTEGER, followers INTEGER)''')
-            cur.execute('''CREATE TABLE IF NOT EXISTS Words (id INTEGER PRIMARY
-                        KEY, name TEXT UNIQUE, pos TEXT)''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS Campaigns(
+                            id          INTEGER PRIMARY KEY, 
+                            name        TEXT UNIQUE
+                        )''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS Posts(
+                            id          INTEGER PRIMARY KEY, 
+                            camp_id     INTEGER,
+                            text        TEXT,
+                            retweets    INTEGER, 
+                            is_junk     BOOLEAN, 
+                            score       FLOAT,
+                            timestamp   TEXT, 
+                            source      TEXT, 
+                            user_name   TEXT, 
+                            user_score  INTEGER, 
+                            followers   INTEGER, 
+                        FOREIGN KEY(camp_id) REFERENCES Campaign(id)
+                        )''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS Words(
+                            id          INTEGER PRIMARY KEY,
+                            name        TEXT,
+                            pos         TEXT,
+                        UNIQUE(name, pos)
+                        )''')
             cur.execute('CREATE UNIQUE INDEX IF NOT EXISTS WordInd ON Words (name)')
-            cur.execute('''CREATE TABLE IF NOT EXISTS PostIndex (camp_id 
-                        INTEGER, post_id INTEGER, word_id INTEGER)''')
-            cur.execute('''CREATE TABLE IF NOT EXISTS WordIndex (word_id 
-                        INTEGER, post_id INTEGER, UNIQUE(word_id, post_id))''')
-            cur.execute('''CREATE TABLE IF NOT EXISTS Keywords (id INTEGER
-                        PRIMARY KEY, camp_id INTEGER, name TEXT, rule 
-                        TEXT, UNIQUE(camp_id, name))''')
-            cur.execute('''CREATE TABLE IF NOT EXISTS KeywordIndex (key_id,
-                        camp_id, UNIQUE(key_id, camp_id))''')
-            cur.execute('''CREATE TABLE IF NOT EXISTS Matches (kw_id INTEGER,
-                        post_id INTEGER, UNIQUE(kw_id, post_id))''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS PostIndex(
+                            post_id     INTEGER,
+                            word_id     INTEGER
+                        )''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS WordIndex(
+                            word_id     INTEGER,
+                            post_id     INTEGER,
+                        UNIQUE(word_id, post_id)
+                        )''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS Keywords(
+                            id          INTEGER PRIMARY KEY,
+                            camp_id     INTEGER,
+                            name        TEXT,
+                            rule        TEXT, 
+                        UNIQUE(camp_id, name),
+                        FOREIGN KEY(camp_id) REFERENCES Campaigns(id)
+                        )''')
+            cur.execute('''
+                        CREATE TABLE IF NOT EXISTS Matches(
+                            kw_id       INTEGER,
+                            post_id     INTEGER, 
+                        UNIQUE(kw_id, post_id)
+                        )''')
             cur.close()
             print 'Success! Database file created and configured:', self.db_fname
         else:
@@ -128,7 +162,7 @@ class InciteExtractor(object):
                        'content_id']
             test_reader = csv.reader(datafile, dialect='excel')
             row = test_reader.next()
-            for ind, header in headers:
+            for ind, header in enumerate(headers):
                 if row[ind] != header:
                     raise IOError('''Error setting data filename! File %s is 
                         not a properly formatted Mutual Mind Export CSV. 
@@ -181,17 +215,30 @@ class InciteExtractor(object):
         conn = sql.connect(self.db_fname)
         with conn:
             cur = conn.cursor()
+            # First input the data about the MM campaign.
+            try:
+                cur.execute('INSERT INTO Campaigns (id, name) VALUES (?, ?)',
+                            (self.mm_campaign_id, self.mm_campaign_name))
+            except sql.IntegrityError:
+                print 'Warning! Data for Mutual Mind Campaign', self.mm_campaign_name,\
+                    'is already contained DB file', self.db_fname, '''. Has
+                    this data already been ingested to the DB file?'''
             kw_count = 0
             for kw in js['objects']:
-                cur.execute('''INSERT OR IGNORE INTO Keywords (id, name, rule)
-                            VALUES (?, ?, ?)''', (self.mm_campaign_id, kw['name'],
-                            kw['keyword']))
-                kw_count += 1
+                try:
+                    cur.execute('''INSERT INTO Keywords (camp_id, name, rule)
+                                VALUES (?, ?, ?)''', (self.mm_campaign_id, kw['name'],
+                                kw['keyword']))
+                    kw_count += 1
+                except sql.IntegrityError:
+                    print 'Warning! Keyword', kw, 'for campaign',\
+                    self.mm_campaign_name,'is already contained in DB file',\
+                    self.db_fname
             conn.commit()
             cur.execute('SELECT COUNT(*) FROM Keywords')
             kw_total = cur.fetchone()[0]
         print 'Success! Keyword data fetched for Mutual Mind Campaign:', self.mm_campaign_name
-        print 'Keywords fetched:', kw_count
+        print 'Keywords stored:', kw_count
         print 'Total keywords in DB:', kw_total
         
     def extract(self):
@@ -206,7 +253,7 @@ class InciteExtractor(object):
         if self.data_fname is None:
             raise IOError('''Input data file must be specified! Call
                 set_data_filename method.''')
-        conn = sql.connect()
+        conn = sql.connect(self.db_fname)
         with conn:
             cur = conn.cursor()
             # Now it's time to read through the CSV and store the data in the DB
@@ -219,24 +266,30 @@ class InciteExtractor(object):
                 lemma = nltk.stem.WordNetLemmatizer()
                 if self.pos_tag == False:
                     for row in reader:
+                        if row[1] != 'twitter':
+                            continue
                         # Remove non-Unicode characters.
                         text = (filter(lambda x: x in (string.printable), row[7]))
                         # Insert relevant post data into Posts table. Each row 
                         # contains data for a different post.
-                        cur.execute('''INSERT INTO Posts (text, retweets,
-                                    is_junk, timestamp, source, user_name, user_score, 
-                                    followers) VALUES (?, 0, ?, ?, ?, ?, ?, ?)''', 
-                                    (text, False, row[0], row[1], row[2], row[4],
-                                     row[5]))
-                        conn.commit()
+                        try:
+                            cur.execute('''INSERT INTO Posts (camp_id, text, retweets,
+                                        is_junk, timestamp, source, user_name, user_score, 
+                                        followers) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?)''', 
+                                        (self.mm_campaign_id, text, False, row[0], 
+                                         row[1], row[2], row[4], row[5]))
+                        except sql.ProgrammingError:
+                            print 'Error inserting post:', text
+                            continue
+#                        conn.commit()
                         postcount += 1
-    #                    if postcount % 100 == 0:
-    #                        print postcount, 'posts ingested.'
-                        print 'Post:', text
+                        if postcount % 100 == 0:
+                            print postcount, 'posts ingested.'
+#                        print '\n\nPost:', text
                         # Now loop through the matched keywords (found in CSV) and
                         # make an entry into the Matches table that tracks which posts
                         # were matched with which keywords during listening.
-                        print '\t Matched Keywords:'
+#                        print 'Matched Keywords:'
                         post_id = cur.lastrowid
                         keywords = row[11].split('|')
                         for kw in keywords:
@@ -245,30 +298,32 @@ class InciteExtractor(object):
                             try:
                                 kw_id = cur.fetchone()[0]
                             except:
-                                print '\t\tWarning! Keyword', kw, 'not found in Keywords Table!'
+                                print '\tWarning! Keyword', kw, 'not found in Keywords Table!'
                             else:
                                 cur.execute('''INSERT OR IGNORE INTO Matches (kw_id,
                                             post_id) VALUES (?, ?)''', (kw_id, post_id))
-                                conn.commit()
-                                print '\t\t', kw
+#                                conn.commit()
+#                                print '\t', kw
                         # Now clean up the text and loop through each word to store
                         # relevant word data in the DB.
-                                
-                        #### TO-DO: Figure out the best way to do tokenizing, stemming.
-                        print 'Words:'        
+                                       
                         small = text.lower()
                         tokens = nltk.word_tokenize(small)
+                        skip_next = False
                         for token in tokens:
+                            if skip_next == True:
+                                skip_next = False
+                                continue
+                            if token is ('@' or '#'):
+                                skip_next = True
+                                continue
                             if token[0] not in string.letters:
                                 continue
-                            if (token in STOP_WORDS) or re.search('^http', token):
+                            if (token in STOP_WORDS):
                                 wordcount += 1
                                 continue
                             word = lemma.lemmatize(token)
-                            print '', word,
-                            ### TO-DO: Error here. sqlite3.ProgrammingError: You must 
-                            ### not use 8-bit bytestrings. I suspect a word coming in
-                            ### was not unicode. Check on it
+#                            print '', word,
                             cur.execute('SELECT id from Words WHERE name = ? LIMIT 1',
                                         (word,))
                             try:
@@ -276,16 +331,108 @@ class InciteExtractor(object):
                             except:
                                 cur.execute('''INSERT OR IGNORE INTO Words (name, pos)
                                             VALUES (?, ?)''', (word, None))
-                                conn.commit()
+#                                conn.commit()
                                 if cur.rowcount != 1:
                                     print 'Error inserting word:', word
                                     continue
                                 word_id = cur.lastrowid
-                            cur.execute('''INSERT OR IGNORE INTO PostIndex (post_id, 
+                            cur.execute('''INSERT INTO PostIndex (post_id, 
                                         word_id) VALUES (?, ?)''', (post_id, word_id))
-                            conn.commit()
+#                            conn.commit()
                             cur.execute('''INSERT OR IGNORE INTO WordIndex (word_id,
                                         post_id) VALUES (?, ?)''', (word_id, post_id))
-                            conn.commit()
+#                            conn.commit()
                             wordcount += 1
-        print 'Ingested: Posts:', postcount, 'Salient Words:', wordcount                
+                        conn.commit()
+                else:
+                    for row in reader:
+                        if row[1] != 'twitter':
+                            continue
+                        # Remove non-Unicode characters.
+                        text = (filter(lambda x: x in (string.printable), row[7]))
+                        # Insert relevant post data into Posts table. Each row 
+                        # contains data for a different post.
+                        try:
+                            cur.execute('''INSERT INTO Posts (camp_id, text, retweets,
+                                        is_junk, timestamp, source, user_name, user_score, 
+                                        followers) VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?)''', 
+                                        (self.mm_campaign_id, text, False, row[0], 
+                                         row[1], row[2], row[4], row[5]))
+                        except sql.ProgrammingError:
+                            print 'Error inserting post:', text
+                            continue
+#                        conn.commit()
+                        postcount += 1
+                        if postcount % 100 == 0:
+                            print postcount, 'posts ingested.'
+#                        print '\n\nPost:', text
+                        # Now loop through the matched keywords (found in CSV) and
+                        # make an entry into the Matches table that tracks which posts
+                        # were matched with which keywords during listening.
+#                        print 'Matched Keywords:'
+                        post_id = cur.lastrowid
+                        keywords = row[11].split('|')
+                        for kw in keywords:
+                            cur.execute('''SELECT id FROM Keywords WHERE name = ?
+                                        LIMIT 1''', (kw,))
+                            try:
+                                kw_id = cur.fetchone()[0]
+                            except:
+                                print '\tWarning! Keyword', kw, 'not found in Keywords Table!'
+                            else:
+                                cur.execute('''INSERT OR IGNORE INTO Matches (kw_id,
+                                            post_id) VALUES (?, ?)''', (kw_id, post_id))
+#                                conn.commit()
+#                                print '\t', kw
+                        # Now clean up the text and loop through each word to store
+                        # relevant word data in the DB.
+                                       
+                        small = text.lower()
+                        tokens = nltk.pos_tag(nltk.word_tokenize(small))
+                        skip_next = False
+                        for token, pos in tokens:
+                            if skip_next == True:
+                                skip_next = False
+                                continue
+                            if token is ('@' or '#'):
+                                skip_next = True
+                                continue
+                            if token[0] not in string.letters:
+                                continue
+                            if (token in STOP_WORDS):
+                                wordcount += 1
+                                continue
+                            if pos[0] == 'N':
+                                word = lemma.lemmatize(token, 'n')
+                            if pos[0] == 'V':
+                                word = lemma.lemmatize(token, 'v')
+                            elif pos[0] == 'J':
+                                word = lemma.lemmatize(token, 'a')
+                            elif pos[0] == 'R':
+                                word = lemma.lemmatize(token, 'r')
+                            else:
+                                word = lemma.lemmatize(token)
+                            
+#                            print '', word,
+                            cur.execute('''SELECT id from Words WHERE name = ? 
+                                        LIMIT 1''', (word))
+                            try:
+                                word_id = cur.fetchone()[0]
+                            except:
+                                cur.execute('''INSERT OR IGNORE INTO Words 
+                                            (name, pos) VALUES (?, ?)''',\
+                                            (word, None))
+#                                conn.commit()
+                                if cur.rowcount != 1:
+                                    print 'Error inserting word:', word
+                                    continue
+                                word_id = cur.lastrowid
+                            cur.execute('''INSERT INTO PostIndex (post_id, 
+                                        word_id) VALUES (?, ?)''', (post_id, word_id))
+#                            conn.commit()
+                            cur.execute('''INSERT OR IGNORE INTO WordIndex (word_id,
+                                        post_id) VALUES (?, ?)''', (word_id, post_id))
+#                            conn.commit()
+                            wordcount += 1
+                        conn.commit()
+        print '\nIngested: Posts:', postcount, 'Salient Words:', wordcount                

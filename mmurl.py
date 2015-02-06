@@ -15,7 +15,7 @@ def augment(url, parameters) :
     key = secrets['key']
     token = secrets['token']
     auth = 'application_key=' + key + '&auth_token=' + token
-    params = ['?format=json']
+    params = ['?format=json', 'limit=50']
     for param in parameters.keys():
         params.append(param + '=' + parameters[param])
     params.append(auth)
