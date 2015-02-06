@@ -12,11 +12,17 @@ from ingest import *
 #test.fetch_keyword_data('Cranberry Juice')
 #test.extract()
 
-cran = InciteExtractor(pos_tag=True)
-cran.db_setup('../DB/cranberry_pos.db')
-cran.set_data_filename('../MM_Data/cranberry.csv')
-cran.fetch_keyword_data('Cranberry Juice')
-cran.extract()
+#cran = InciteExtractor(pos_tag=True)
+#cran.db_setup('../DB/cranberry_pos.db')
+#cran.set_data_filename('../MM_Data/cranberry.csv')
+#cran.fetch_keyword_data('Cranberry Juice')
+#cran.extract()
+
+frz = InciteExtractor(pos_tag=True)
+frz.db_setup('../DB/frozen.db')
+frz.set_data_filename('../MM_Data/frozenfood_small.csv')
+frz.fetch_keyword_data('')
+frz.extract()
 
 # SORTS BY COUNT, RETURNS (WORD, COUNT):
 # cur.execute('select Words.name, count(*) from PostIndex join Words on PostIndex.word_id=Words.id group by word_id order by count(*) desc')
