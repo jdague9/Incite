@@ -204,7 +204,7 @@ class InciteExtractor(object):
         '''Extracts data using CSV Reader object created during initialization.
         '''
         if (self.db_fname is None) or (self.mm_campaign_id is None) or (self.data_fname is None):
-            print 'Error in extract: all InciteExtractor parameters must be set!'
+            print 'Error in extract: All InciteExtractor parameters must be set!'
             print self
         else:
             conn = sql.connect(self.db_fname)
